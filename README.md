@@ -1,1 +1,8 @@
-# junior-devops-lab
+junior-devops-lab
+
+домашняя лаба по git/docker/ci|cd/ansible
+
+===
+
+# стек будет постепенно пополняться по мере освоения и закрепления знаний
+
