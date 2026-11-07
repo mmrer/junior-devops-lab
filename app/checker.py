@@ -4,7 +4,7 @@ import socket
 import ssl
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from urllib.parse import urlparse
 
 import httpx
@@ -24,13 +24,13 @@ class CheckResult:
 
 def days_until(expires_at: datetime, now: datetime | None = None) -> int:
     """Сколько полных дней осталось до даты. Отдельная функция — её легко тестировать."""
-    now = now or datetime.now(timezone.utc)
+    now = now or datetime.now(UTC)
     return (expires_at - now).days
 
 
 def parse_cert_date(value: str) -> datetime:
     """Дата из сертификата выглядит так: 'Jun  1 12:00:00 2027 GMT'."""
-    return datetime.strptime(value, "%b %d %H:%M:%S %Y %Z").replace(tzinfo=timezone.utc)
+    return datetime.strptime(value, "%b %d %H:%M:%S %Y %Z").replace(tzinfo=UTC)
 
 
 def get_ssl_days_left(url: str) -> int | None:
@@ -40,9 +40,11 @@ def get_ssl_days_left(url: str) -> int | None:
         return None
     port = parsed.port or 443
     context = ssl.create_default_context()
-    with socket.create_connection((parsed.hostname, port), timeout=REQUEST_TIMEOUT) as sock:
-        with context.wrap_socket(sock, server_hostname=parsed.hostname) as tls:
-            cert = tls.getpeercert()
+    with (
+        socket.create_connection((parsed.hostname, port), timeout=REQUEST_TIMEOUT) as sock,
+        context.wrap_socket(sock, server_hostname=parsed.hostname) as tls,
+    ):
+        cert = tls.getpeercert()
     return days_until(parse_cert_date(cert["notAfter"]))
 
 

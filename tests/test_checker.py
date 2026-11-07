@@ -1,6 +1,6 @@
 """Тесты без сети и без базы — их будет гонять CI."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app import alerts
 from app.checker import CheckResult, days_until, parse_cert_date
@@ -8,12 +8,12 @@ from app.checker import CheckResult, days_until, parse_cert_date
 
 def test_parse_cert_date():
     dt = parse_cert_date("Jun  1 12:00:00 2027 GMT")
-    assert dt == datetime(2027, 6, 1, 12, 0, tzinfo=timezone.utc)
+    assert dt == datetime(2027, 6, 1, 12, 0, tzinfo=UTC)
 
 
 def test_days_until():
-    now = datetime(2027, 1, 1, tzinfo=timezone.utc)
-    assert days_until(datetime(2027, 1, 11, tzinfo=timezone.utc), now) == 10
+    now = datetime(2027, 1, 1, tzinfo=UTC)
+    assert days_until(datetime(2027, 1, 11, tzinfo=UTC), now) == 10
 
 
 def _result(url="https://x.test", up=True, ssl=90):

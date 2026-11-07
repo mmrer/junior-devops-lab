@@ -4,8 +4,8 @@ import logging
 
 import httpx
 
-from app.config import SSL_WARN_DAYS, TELEGRAM_CHAT_ID, TELEGRAM_TOKEN
 from app.checker import CheckResult
+from app.config import SSL_WARN_DAYS, TELEGRAM_CHAT_ID, TELEGRAM_TOKEN
 
 log = logging.getLogger(__name__)
 
