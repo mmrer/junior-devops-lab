@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # кнопка ручного запуска на GitHub
+
+jobs:
+  test:
+    runs-on: self-hosted    # вот это и отправляет задачу на твою виртуалку
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: .venv/bin/ruff check .
+
+      - name: Tests
+        run: .venv/bin/pytest -q
+
+      - name: Build Docker image
+        run: docker build -t site-monitor:${{ github.sha }} .
